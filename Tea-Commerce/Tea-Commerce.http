@@ -1,0 +1,6 @@
+@Tea_Commerce_HostAddress = http://localhost:5077
+
+GET {{Tea_Commerce_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
