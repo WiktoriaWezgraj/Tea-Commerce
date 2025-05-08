@@ -1,0 +1,9 @@
+﻿namespace Tea_Commerce.Models
+{
+    public class Category : BaseModel
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+    }
+}
