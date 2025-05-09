@@ -6,9 +6,9 @@ namespace Tea.Application;
 
 public class ProductService : IProductService
 {
-    private IRepository _repository;
+    private IProductsRepository _repository;
 
-    public ProductService(IRepository repository)
+    public ProductService(IProductsRepository repository)
     {
         _repository = repository;
     }
@@ -38,9 +38,9 @@ public class ProductService : IProductService
         return result;
     }
 
-    //do ćwiczeń
-    public Product Add(Product product)
+    public async Task<bool> DeleteAsync(int id)
     {
-        return _repository.AddProductAsync(product).Result;
+        var result = await _repository.DeleteProductAsync(id);
+        return result;
     }
 }

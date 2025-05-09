@@ -9,7 +9,7 @@ namespace Tea.Domain.Models;
 public class Product : BaseModel
 {
     [Key]
-
+    //baza danych automatycznie generuje wartość tej kolumny przy INSERT
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
@@ -35,8 +35,7 @@ public class Product : BaseModel
 
 
     [ForeignKey("CategoryId")]
+    //z tego wynika ze category może być pusta
     public int? CategoryId { get; set; }
-    public Category Category { get; set; }
-
-    public bool Deleted { get; set; } = false;
+    public Category? Category { get; set; }
 }

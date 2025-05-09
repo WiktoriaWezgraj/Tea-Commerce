@@ -1,42 +1,67 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Tea.Application;
+using Tea.Domain.Models;
 
-namespace Tea_Commerce.Controllers
+namespace Tea_Commerce.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class ProductController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProductController : ControllerBase
+    private IProductService _productService;
+    public ProductController(IProductService productService)
     {
-        // GET: api/<ProductController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        _productService = productService;
+    }
+
+    // GET: api/<ProductController>
+    [HttpGet]
+    public async Task<ActionResult> Get()
+    {
+        var result = await _productService.GetAllAsync();
+        return Ok(result);
+    }
+
+    // GET api/<ProductController>/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult> Get(int id)
+    {
+        var result = await _productService.GetAsync(id);
+        if (result == null)
         {
-            return new string[] { "value1", "value2" };
+            return NotFound();
         }
 
-        // GET api/<ProductController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        return Ok(result);
+    }
 
-        // POST api/<ProductController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+    // POST api/<ProductController>
+    [HttpPost]
+    public async Task<ActionResult> Post([FromBody] Product product)
+    {
+        var result = await _productService.AddAsync(product);
 
-        // PUT api/<ProductController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        return Ok(result);
+    }
 
-        // DELETE api/<ProductController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+    // PUT api/<ProductController>/5
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Put(int id, [FromBody] Product product)
+    {
+        var result = await _productService.UpdateAsync(product);
+
+        return Ok(result);
+    }
+
+    // DELETE api/<ProductController>/5
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        var product = await _productService.GetAsync(id);
+        product.Deleted = true;
+        var result = await _productService.UpdateAsync(product);
+
+        return Ok(result);
     }
 }
