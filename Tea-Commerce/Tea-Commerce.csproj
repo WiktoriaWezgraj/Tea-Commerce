@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tea.Application\Tea.Application.csproj" />
-    <ProjectReference Include="..\Tea.Domain\Tea.Domain.csproj" />
   </ItemGroup>
 
 </Project>
