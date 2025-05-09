@@ -9,7 +9,7 @@ namespace Tea_Commerce.Controllers;
 [ApiController]
 public class ProductController : ControllerBase
 {
-    private IProductService _productService;
+    private readonly IProductService _productService;
     public ProductController(IProductService productService)
     {
         _productService = productService;
@@ -53,6 +53,15 @@ public class ProductController : ControllerBase
 
         return Ok(result);
     }
+
+
+    [HttpPatch]
+    public ActionResult Add([FromBody] Product product)
+    {
+        var result = _productService.AddAsync(product);
+        return Ok(result);
+    }
+
 
     // DELETE api/<ProductController>/5
     [HttpDelete("{id}")]

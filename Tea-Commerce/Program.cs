@@ -37,3 +37,5 @@ var seeder = scope.ServiceProvider.GetRequiredService<ITeaSeeder>();
 await seeder.Seed();
 
 app.Run();
+
+public partial class Program { }
