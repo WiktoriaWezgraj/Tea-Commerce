@@ -36,10 +36,6 @@ public class CreditCardController : ControllerBase
         {
             return StatusCode(406, "Card number invalid.");
         }
-        //catch (NotSupportedException)
-        //{
-        //    return StatusCode(406, "Card provider not supported.");
-        //}
 
         CreditCardProvider? provider = _creditCardService.GetCardProvider(cardNumber);
         if (provider == null)
