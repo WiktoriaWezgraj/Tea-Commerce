@@ -1,11 +1,17 @@
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.EntityFrameworkCore;
 using Tea.Application;
 using Tea.Domain.Repositories;
 using Tea.Domain.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
+//Server=localhost,1444;Database=TeaShopDb;User Id=sa;Password=MyPass123$;Encrypt=False;TrustServerCertificate=True;
 
-builder.Services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
+var connectionString = "Server=localhost,1444;Database=TeaShopDb;User Id=sa;Password=MyPass123$;Encrypt=False;TrustServerCertificate=True;";
+
+builder.Services.AddDbContext<DataContext>(options =>
+                options.UseSqlServer(connectionString), ServiceLifetime.Transient);
+
 builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
 // Add services to the container.
 builder.Services.AddScoped<ICreditCardService, CreditCardService>();
@@ -32,9 +38,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-var scope = app.Services.CreateScope();
-var seeder = scope.ServiceProvider.GetRequiredService<ITeaSeeder>();
-await seeder.Seed();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    await db.Database.MigrateAsync();
+    var seeder = scope.ServiceProvider.GetRequiredService<ITeaSeeder>();
+    await seeder.Seed();
+}
 
 app.Run();
 

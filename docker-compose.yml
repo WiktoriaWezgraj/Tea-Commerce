@@ -1,0 +1,25 @@
+services:
+  tea-commerce:
+    image: ${DOCKER_REGISTRY-}teacommerce
+    depends_on:
+      - db
+    environment:
+      - CONNECTION_STRING=Server=${DB_HOST},${DB_PORT};Database=${DB_NAME};User Id=${DB_USER};Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True;
+    build:
+      context: .
+      dockerfile: Tea-Commerce/Dockerfile
+ 
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "${SA_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "${DB_PORT}:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  mssql_data:
+  
+ 

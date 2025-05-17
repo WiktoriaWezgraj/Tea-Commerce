@@ -13,8 +13,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Tea-Commerce/Tea-Commerce.csproj", "Tea-Commerce/"]
-COPY ["Tea.Application/Tea.Application.csproj", "Tea.Application/"]
-COPY ["Tea.Domain/Tea.Domain.csproj", "Tea.Domain/"]
 RUN dotnet restore "./Tea-Commerce/Tea-Commerce.csproj"
 COPY . .
 WORKDIR "/src/Tea-Commerce"

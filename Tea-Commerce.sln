@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tea.Domain.Tests", "Tea.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tea-Commerce.Tests", "Tea-Commerce.Tests\Tea-Commerce.Tests.csproj", "{D49B3299-8EE5-4980-A334-F7EE01A7EB48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tea-Commerce.IntegrationTests", "Tea-Commerce.IntegrationTests\Tea-Commerce.IntegrationTests.csproj", "{D8DAF8FB-5107-480E-A7F9-E33EE05ECEDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tea-Commerce.IntegrationTests", "Tea-Commerce.IntegrationTests\Tea-Commerce.IntegrationTests.csproj", "{D8DAF8FB-5107-480E-A7F9-E33EE05ECEDC}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{ACA4BFB2-9DBB-470C-BF44-5ACAE71122AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{D8DAF8FB-5107-480E-A7F9-E33EE05ECEDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8DAF8FB-5107-480E-A7F9-E33EE05ECEDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8DAF8FB-5107-480E-A7F9-E33EE05ECEDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA4BFB2-9DBB-470C-BF44-5ACAE71122AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA4BFB2-9DBB-470C-BF44-5ACAE71122AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA4BFB2-9DBB-470C-BF44-5ACAE71122AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA4BFB2-9DBB-470C-BF44-5ACAE71122AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
