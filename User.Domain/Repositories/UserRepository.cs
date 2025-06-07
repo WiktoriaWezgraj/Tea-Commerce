@@ -1,9 +1,8 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using User.Domain.Models;
-using User.Domain.Repositories;
 
-namespace User.Infrastructure.Repositories
+namespace User.Domain.Repositories
 {
     public class UserRepository : IUserRepository
     {

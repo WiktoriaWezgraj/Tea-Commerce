@@ -1,4 +1,4 @@
-﻿namespace User.Domain.Exceptions;
+﻿namespace User.Domain.Exeptions;
 
 public class InvalidCredentialsException : Exception
 {
