@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using User.Application;
 using User.Domain;
-using User.Domain.Exeptions;
+using User.Domain.Exceptions;
 
 namespace UserService.Controllers
 {
