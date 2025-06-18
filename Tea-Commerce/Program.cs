@@ -9,8 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = "Server=localhost,1444;Database=TeaShopDb;User Id=sa;Password=MyPass123$;Encrypt=False;TrustServerCertificate=True;";
 
-builder.Services.AddDbContext<DataContext>(options =>
-                options.UseSqlServer(connectionString), ServiceLifetime.Transient);
+builder.Services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
+//builder.Services.AddDbContext<DataContext>(options =>
+//                options.UseSqlServer(connectionString), ServiceLifetime.Transient);
 
 builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
 // Add services to the container.
@@ -38,13 +39,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-    await db.Database.MigrateAsync();
-    var seeder = scope.ServiceProvider.GetRequiredService<ITeaSeeder>();
-    await seeder.Seed();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+//    await db.Database.MigrateAsync();
+//    var seeder = scope.ServiceProvider.GetRequiredService<ITeaSeeder>();
+//    await seeder.Seed();
+//}
 
 app.Run();
 
