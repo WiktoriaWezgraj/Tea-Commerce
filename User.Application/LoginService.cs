@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
-using System.Data;
-using System;
 using System.Security.Authentication;
-using User.Domain.Exeptions;
+using User.Domain.Exceptions;
 using User.Domain.Models;
 
 namespace User.Application;
@@ -21,14 +19,13 @@ public class LoginService : ILoginService
         // Tymczasowa weryfikacja użytkownika (na sztywno)
         if (username != "admin" || password != "password")
         {
-            var roles = new List<string> { "Client", "Employee", "Administrator" };
-            var token = _jwtTokenService.GenerateToken(123, roles);
-            return token;
-        }
-        else
-        {
             throw new InvalidCredentialsException();
         }
 
+        // Przykładowe dane użytkownika
+        var userId = 1;
+        var roles = new List<string> { "Administrator" };
+
+        return _jwtTokenService.GenerateToken(userId, roles);
     }
 }

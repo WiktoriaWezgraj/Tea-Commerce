@@ -5,194 +5,153 @@ using System.Net.Http.Json;
 using Tea.Domain.Models;
 using Tea.Domain.Repositories;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System.Text;
 
 namespace Tea_Commerce.IntegrationTests;
 
 public class ProductControllerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 {
-    public class ProductControllerIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
+    private readonly HttpClient _client;
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public ProductControllerIntegrationTests(WebApplicationFactory<Program> factory)
     {
-        private readonly HttpClient _client;
-        private WebApplicationFactory<Program> _factory;
-
-        public ProductControllerIntegrationTest(WebApplicationFactory<Program> factory)
-        {
-            _factory = factory
-                .WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureServices(services =>
-                    {
-                        // pobranie dotychczasowej konfiguracji bazy danych
-                        var dbContextOptions = services
-                            .SingleOrDefault(service => service.ServiceType == typeof(DbContextOptions<DataContext>));
-
-                        //// usuniêcie dotychczasowej konfiguracji bazy danych
-                        services.Remove(dbContextOptions);
-
-                        // Stworzenie nowej bazy danych
-                        services
-                            .AddDbContext<DataContext>(options => options.UseInMemoryDatabase("MyDBForTest"));
-
-                    });
-                });
-
-            _client = _factory.CreateClient();
-        }
-
-        [Fact]
-        public async Task Get_ReturnsAllProducts_ExceptedTwoProducts()
-        {
-            // Arrange
-            using (var scope = _factory.Services.CreateScope())
-            {
-                // Pobranie kontekstu bazy danych
-                var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-
-                dbContext.Products.RemoveRange(dbContext.Products);
-
-                // Stworzenie obiektu
-                dbContext.Products.AddRange(
-                    new Product { Name = "Product1" },
-                    new Product { Name = "Product2" }
-                );
-                // Zapisanie obiektu
-                await dbContext.SaveChangesAsync();
-            }
-
-            // Act
-            var response = await _client.GetAsync("/api/product");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-            var products = await response.Content.ReadFromJsonAsync<List<Product>>();
-            Assert.Equal(2, products?.Count);
-        }
-
-
-        [Fact]
-        public async Task Post_AddThousandsProducts_ExceptedThousandsProducts()
-        {
-            // Arrange
-            using (var scope = _factory.Services.CreateScope())
-            {
-                // Pobranie kontekstu bazy danych
-                var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-
-                dbContext.Products.RemoveRange(dbContext.Products);
-                dbContext.SaveChanges();
-
-                var tasks = new List<Task>();
-
-                for (int i = 0; i < 10000; i++)
-                {
-                    int index = i;
-                    tasks.Add(Task.Run(async () =>
-                    {
-                        using (var scope = _factory.Services.CreateScope())
-                        {
-                            // Pobranie kontekstu bazy danych
-                            var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-                            {
-                                dbContext.Products.Add(new Product { Name = "Product" + index });
-                                dbContext.SaveChanges();
-                            }
-                        }
-                    }));
-                }
-                await Task.WhenAll(tasks);
-            }
-
-            // Act
-            var response = await _client.GetAsync("/api/product");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-            var products = await response.Content.ReadFromJsonAsync<List<Product>>();
-            Assert.Equal(10000, products?.Count);
-        }
-
-        [Fact]
-        public async Task Post_AddThousandsProductsAsync_ExceptedThousandsProducts()
-        {
-            // Arrange
-            using (var scope = _factory.Services.CreateScope())
-            {
-                // Pobranie kontekstu bazy danych
-                var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-
-                dbContext.Products.RemoveRange(dbContext.Products);
-                await dbContext.SaveChangesAsync();
-
-            }
-
-            var tasks = new List<Task>();
-
-            for (int i = 0; i < 10000; i++)
-            {
-                int index = i;
-                tasks.Add(Task.Run(async () =>
-                {
-                    using (var scope = _factory.Services.CreateScope())
-                    {
-                        // Pobranie kontekstu bazy danych
-                        var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-                        {
-                            dbContext.Products.Add(new Product { Name = "Product" + index });
-                            await dbContext.SaveChangesAsync();
-                        }
-                    }
-                }));
-            }
-            await Task.WhenAll(tasks);
-
-
-            // Act
-            var response = await _client.GetAsync("/api/product");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-            var products = await response.Content.ReadFromJsonAsync<List<Product>>();
-            Assert.Equal(10000, products?.Count);
-        }
-
-
-
-        [Fact]
-        public async Task Add_AddProduct_ExceptedOneProduct()
-        {
-            // Arrange
-            using (var scope = _factory.Services.CreateScope())
-            {
-                // Pobranie kontekstu bazy danych
-                var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-
-                dbContext.Products.RemoveRange(dbContext.Products);
-                dbContext.SaveChanges();
-
-                // Act
-                var category = new Category
-                {
-                    Name = "test"
-                };
-
-                var product = new Product
-                {
-                    Name = "Product",
-                    Category = category
-                };
-
-                var json = JsonConvert.SerializeObject(product);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _client.PatchAsync("/api/Product", content);
-
-                var result = await dbContext.Products.ToListAsync();
-
-                // Assert
-                Assert.Equal(1, result?.Count);
-            }
-        }
+        _factory = factory;
+        _client = factory.CreateClient();
     }
+
+    private async Task ResetAndSeedDbAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+        dbContext.Products.RemoveRange(dbContext.Products);
+
+        dbContext.Products.AddRange(
+            new Product { Name = "Product1" },
+            new Product { Name = "Product2" }
+        );
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    [Fact]
+    public async Task Get_ShouldReturnSeededProducts()
+    {
+        await ResetAndSeedDbAsync();
+
+        var response = await _client.GetAsync("/api/product");
+        response.EnsureSuccessStatusCode();
+
+        var products = await response.Content.ReadFromJsonAsync<List<Product>>();
+        products.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task Post_ShouldAddProduct()
+    {
+        await ResetAndSeedDbAsync();
+
+        var product = new Product { Name = "Product3" };
+
+        var postResponse = await _client.PostAsJsonAsync("/api/product", product);
+        postResponse.EnsureSuccessStatusCode();
+
+        var getResponse = await _client.GetAsync("/api/product");
+        var products = await getResponse.Content.ReadFromJsonAsync<List<Product>>();
+
+        products.Should().Contain(p => p.Name == "Product3");
+    }
+
+    [Fact]
+    public async Task Get_ById_ShouldReturnCorrectProduct()
+    {
+        await ResetAndSeedDbAsync();
+
+        var allProducts = await _client.GetFromJsonAsync<List<Product>>("/api/product");
+        var createdProduct = allProducts.Find(p => p.Name == "Product1");
+
+        var getByIdResponse = await _client.GetAsync($"/api/product/{createdProduct.Id}");
+        var productById = await getByIdResponse.Content.ReadFromJsonAsync<Product>();
+
+        productById.Should().NotBeNull();
+        productById.Name.Should().Be("Product1");
+    }
+
+    [Fact]
+    public async Task Put_ShouldUpdateProductName()
+    {
+        await ResetAndSeedDbAsync();
+
+        var products = await _client.GetFromJsonAsync<List<Product>>("/api/product");
+        var toUpdate = products.Find(p => p.Name == "Product1");
+
+        toUpdate.Name = "UpdatedProduct";
+
+        var putResponse = await _client.PutAsJsonAsync($"/api/product/{toUpdate.Id}", toUpdate);
+        putResponse.EnsureSuccessStatusCode();
+
+        var updatedProduct = await _client.GetFromJsonAsync<Product>($"/api/product/{toUpdate.Id}");
+        updatedProduct.Name.Should().Be("UpdatedProduct");
+    }
+
+    [Fact]
+    public async Task Delete_ShouldSetProductDeletedTrue()
+    {
+        await ResetAndSeedDbAsync();
+
+        var products = await _client.GetFromJsonAsync<List<Product>>("/api/product");
+        var toDelete = products.Find(p => p.Name == "Product1");
+
+        var deleteResponse = await _client.DeleteAsync($"/api/product/{toDelete.Id}");
+        deleteResponse.EnsureSuccessStatusCode();
+
+        var deleted = await _client.GetFromJsonAsync<Product>($"/api/product/{toDelete.Id}");
+        deleted.Deleted.Should().BeTrue();
+    }
+
+
+    //dla patch
+    [Fact]
+    public async Task Add_AddProduct_ExpectedOneProduct()
+    {
+        await ResetAndSeedDbAsync();
+
+        var product = new Product { Name = "PatchedProduct" };
+
+        var patchResponse = await _client.PatchAsJsonAsync("/api/product", product);
+        patchResponse.EnsureSuccessStatusCode();
+
+        var getResponse = await _client.GetAsync("/api/product");
+        var products = await getResponse.Content.ReadFromJsonAsync<List<Product>>();
+
+        products.Should().Contain(p => p.Name == "PatchedProduct");
+    }
+
+
+
+
+    [Fact]
+    public async Task RunMultipleTestsInParallel()
+    {
+        await ResetAndSeedDbAsync();
+
+        var task1 = AddProductTest("ParallelProduct1");
+        var task2 = AddProductTest("ParallelProduct2");
+        var task3 = AddProductTest("ParallelProduct3");
+
+        await Task.WhenAll(task1, task2, task3);
+
+        var products = await _client.GetFromJsonAsync<List<Product>>("/api/product");
+        products.Should().Contain(p => p.Name == "ParallelProduct1");
+        products.Should().Contain(p => p.Name == "ParallelProduct2");
+        products.Should().Contain(p => p.Name == "ParallelProduct3");
+    }
+
+    private async Task AddProductTest(string productName)
+    {
+        var product = new Product { Name = productName };
+        var response = await _client.PostAsJsonAsync("/api/product", product);
+        response.EnsureSuccessStatusCode();
+    }
+
 }

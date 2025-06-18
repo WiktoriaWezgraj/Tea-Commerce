@@ -1,35 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using User.Application;
+using User.Domain;
 using User.Domain.Exeptions;
-using User.Application;
-using User.Domain.Models.Requests;
 
 namespace UserService.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        protected ILoginService _loginService;
+        private readonly ILoginService _loginService;
 
         public LoginController(ILoginService loginService)
         {
             _loginService = loginService;
         }
 
-
-        [HttpPost]
+        [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
             try
             {
                 var token = _loginService.Login(request.Username, request.Password);
-                return Ok(new { token });
+                return Ok(new { Token = token });
             }
-            catch (InvalidCredentialsException)
+            catch (InvalidCredentialsException ex)
             {
-                return Unauthorized();
+                return Unauthorized(new { Message = ex.Message });
             }
         }
 
@@ -38,7 +36,8 @@ namespace UserService.Controllers
         [Authorize(Policy = "AdminOnly")]
         public IActionResult AdminPage()
         {
-            return Ok();
+            return Ok("Dane tylko dla administratora");
         }
     }
+
 }

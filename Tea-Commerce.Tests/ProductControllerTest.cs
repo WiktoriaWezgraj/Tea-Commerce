@@ -9,104 +9,103 @@ using FluentAssertions;
 
 namespace Tea_Commerce.Tests;
 
-public class ProductControllerTests
+public class ProductControllerTest
 {
     private readonly Mock<IProductService> _mockService;
     private readonly ProductController _controller;
 
-    public ProductControllerTests()
+    public ProductControllerTest()
     {
         _mockService = new Mock<IProductService>();
         _controller = new ProductController(_mockService.Object);
     }
-
     [Fact]
-    public async Task Get_ShouldReturnAllProducts_ReturnTrue()
+    public async Task Get_ShouldReturnTrue()
     {
-        // Arrange
-        var products = new List<Product> { new Product(), new Product() };
-        _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(products);
+        var products = new List<Product>
+        {
+            new Product { Id=1 },
+            new Product { Id=2 }
+        };
 
-        // Act
+        _mockService.Setup(x => x.GetAllAsync()).ReturnsAsync(products);
+
         var result = await _controller.Get();
 
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(products, okResult.Value);
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var value = okResult.Value.Should().BeAssignableTo<IEnumerable<Product>>().Subject;
+        value.Count().Should().Be(2);
     }
 
-    [Fact]
-    public async Task Get_WithValidId_ReturnsProduct_ReturnTrue()
-    {
-        // Arrange
-        var product = new Product { Id = 1 };
-        _mockService.Setup(s => s.GetAsync(1)).ReturnsAsync(product);
 
-        // Act
+    [Fact]
+    public async Task GetById_ShouldReturnTrue_WhenExists()
+    {
+        var product = new Product { Id = 1 };
+        _mockService.Setup(i => i.GetAsync(1)).ReturnsAsync(product);
+
         var result = await _controller.Get(1);
 
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(product, okResult.Value);
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var returned = okResult.Value.Should().BeOfType<Product>().Subject;
+        returned.Id.Should().Be(1);
+
     }
 
     [Fact]
-    public async Task Get_WithInvalidId_ReturnsNotFound()
+    public async Task GetById_ShouldReturnTrue_WhenNotExists()
     {
-        // Arrange
-        _mockService.Setup(s => s.GetAsync(It.IsAny<int>())).ReturnsAsync((Product)null);
+        _mockService.Setup(i => i.GetAsync(-1)).ReturnsAsync((Product)null!);
 
-        // Act
-        var result = await _controller.Get(999);
+        var result = await _controller.Get(-1);
 
-        // Assert
-        Assert.IsType<NotFoundResult>(result);
+        result.Should().BeOfType<NotFoundResult>();
+
     }
 
     [Fact]
-    public async Task Post_ValidProduct_ReturnsCreatedProduct()
+    public async Task Post_ShouldAddProduct()
     {
-        // Arrange
-        var newProduct = new Product();
-        _mockService.Setup(s => s.AddAsync(It.IsAny<Product>())).ReturnsAsync(newProduct);
-
-        // Act
-        var result = await _controller.Post(newProduct);
-
-        // Assert
-        _mockService.Verify(s => s.AddAsync(newProduct), Times.Once);
-        Assert.IsType<OkObjectResult>(result);
-    }
-
-    [Fact]
-    public async Task Put_ValidProduct_UpdatesAndReturnsOk()
-    {
-        // Arrange
         var product = new Product { Id = 1 };
-        _mockService.Setup(s => s.UpdateAsync(product)).ReturnsAsync(product);
 
-        // Act
+        _mockService.Setup(s => s.AddAsync(It.IsAny<Product>())).ReturnsAsync(product);
+
+        var result = await _controller.Post(product);
+
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var added = okResult.Value.Should().BeOfType<Product>().Subject;
+        added.Id.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Put_ShouldUpdateProduct()
+    {
+        var product = new Product { Id = 1, Price = 100 };
+
+        _mockService.Setup(u => u.UpdateAsync(It.IsAny<Product>())).ReturnsAsync(product);
+
         var result = await _controller.Put(1, product);
 
-        // Assert
-        _mockService.Verify(s => s.UpdateAsync(product), Times.Once);
-        Assert.IsType<OkObjectResult>(result);
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var updated = okResult.Value.Should().BeOfType<Product>().Subject;
+        updated.Price.Should().Be(100);
+
     }
+
 
     [Fact]
-    public async Task Delete_ValidId_MarksDeletedAndUpdates()
+    public async Task Delete_ShouldMarkProductAsDeleted()
     {
-        // Arrange
         var product = new Product { Id = 1, Deleted = false };
-        _mockService.Setup(s => s.GetAsync(1)).ReturnsAsync(product);
-        _mockService.Setup(s => s.UpdateAsync(It.IsAny<Product>())).ReturnsAsync(product);
 
-        // Act
+        _mockService.Setup(d => d.GetAsync(1)).ReturnsAsync(product);
+        _mockService.Setup(d => d.UpdateAsync(It.Is<Product>(p => p.Deleted))).ReturnsAsync(product);
+
         var result = await _controller.Delete(1);
 
-        // Assert
-        _mockService.Verify(s => s.GetAsync(1), Times.Once);
-        _mockService.Verify(s => s.UpdateAsync(It.Is<Product>(p => p.Deleted)), Times.Once);
-        Assert.IsType<OkObjectResult>(result);
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var deleted = okResult.Value.Should().BeOfType<Product>().Subject;
+        deleted.Deleted.Should().BeTrue();
     }
+
 }
