@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using ShoppingCart.Domain.Models;
+using ShoppingCart.Domain.Queries;
+using ShoppingCart.Domain.Commands;
+
 
 namespace ShoppingCart.Controllers
 {
@@ -16,40 +18,20 @@ namespace ShoppingCart.Controllers
             _mediator = mediator;
         }
 
-
-        // GET: api/<CartController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpPost("add-product")]
+        public async Task<IActionResult> AddProductToCart([FromBody] AddProductToCartCommand command)
         {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<CartController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<CartController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<CartController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<CartController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            await _mediator.Send(command);
+            return Ok();
         }
 
 
+        [HttpPost("remove-product")]
+        public async Task<IActionResult> RemoveProductFromCart([FromBody] RemoveProductFromCartCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok();
+        }
 
         [HttpGet("{cartId}")]
         public async Task<IActionResult> GetCart(int cartId)
@@ -68,20 +50,14 @@ namespace ShoppingCart.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-product")]
-        public async Task<IActionResult> AddProductToCart([FromBody] AddProductToCartCommand command)
+        // GET: api/<CartController>
+        [HttpGet]
+        public IEnumerable<string> Get()
         {
-            await _mediator.Send(command);
-            return Ok();
+            return new string[] { "value1", "value2" };
         }
 
-        
-        [HttpPost("remove-product")]
-        public async Task<IActionResult> RemoveProductFromCart([FromBody] RemoveProductFromCartCommand command)
-        {
-            await _mediator.Send(command);
-            return Ok();
-        }
+              
 
     }
 }

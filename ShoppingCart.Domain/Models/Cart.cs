@@ -1,6 +1,4 @@
-﻿using Tea.Domain.Models;
-
-namespace ShoppingCart.Domain.Models;
+﻿namespace ShoppingCart.Domain.Models;
 
 public class Cart
 {

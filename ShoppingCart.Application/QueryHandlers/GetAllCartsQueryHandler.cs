@@ -3,6 +3,7 @@ using ShoppingCart.Domain.Interfaces;
 using ShoppingCart.Domain.Models;
 using ShoppingCart.Domain.Queries;
 
+namespace ShoppingCart.Application.QueryHandlers;
 public class GetAllCartsQueryHandler : IRequestHandler<GetAllCartsQuery, List<Cart>>
 {
     private readonly ICartReader _cartReader;

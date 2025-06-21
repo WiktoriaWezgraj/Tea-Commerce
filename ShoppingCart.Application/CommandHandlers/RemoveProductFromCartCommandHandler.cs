@@ -2,6 +2,7 @@
 using ShoppingCart.Domain.Commands;
 using ShoppingCart.Domain.Interfaces;
 
+namespace ShoppingCart.Application.CommandHandlers;
 public class RemoveProductFromCartCommandHandler : IRequestHandler<RemoveProductFromCartCommand>
 {
     private readonly ICartRemover _cartRemover;

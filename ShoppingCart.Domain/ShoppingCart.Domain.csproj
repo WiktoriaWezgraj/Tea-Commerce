@@ -6,16 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-	<ItemGroup>
+<!--	<ItemGroup>
 		<ProjectReference Include="..\Tea.Domain\Tea.Domain.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="NewFolder\" />
-	  <Folder Include="Repositories\" />
-	  <Folder Include="ViewModels\" />
-	</ItemGroup>
-
+-->
 	<ItemGroup>
 	  <PackageReference Include="MediatR" Version="12.5.0" />
 	</ItemGroup>

@@ -6,7 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-
+	<ItemGroup>
+		<PackageReference Include="MediatR" Version="12.5.0" />
+	</ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\ShoppingCart.Domain\ShoppingCart.Domain.csproj" />
 		<ProjectReference Include="..\ShoppingCart.Infrastructure\ShoppingCart.Infrastructure.csproj" />
