@@ -17,16 +17,20 @@ builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
 // Add services to the container.
 builder.Services.AddScoped<ICreditCardService, CreditCardService>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICustomerSeeder, CustomerSeeder>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomersRepository, CustomersRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+builder.Services.AddScoped<ITeaSeeder, TeaSeeder>();
+builder.Services.AddScoped<ICustomerSeeder, CustomerSeeder>();
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ITeaSeeder, TeaSeeder>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,13 +46,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-//    await db.Database.MigrateAsync();
-//    var seeder = scope.ServiceProvider.GetRequiredService<ITeaSeeder>();
-//    await seeder.Seed();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<ITeaSeeder>();
+    await seeder.Seed();
+}
 
 app.Run();
 
