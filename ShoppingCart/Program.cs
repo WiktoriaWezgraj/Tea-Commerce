@@ -10,13 +10,11 @@ builder.Services.AddControllers();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ShoppingCart.Application.Services.CartService).Assembly));
 
 // Register dependencies (DIP)
+// Rejestracja zale¿noœci dla ró¿nych us³ug
 builder.Services.AddSingleton<ICartRepository, InMemoryCartRepository>();
-builder.Services.AddSingleton<ICartAdder, CartService>();
-builder.Services.AddSingleton<ICartRemover, CartService>();
-builder.Services.AddSingleton<ICartReader, CartService>();
-
-
-builder.Services.AddControllers();
+builder.Services.AddSingleton<ICartAdder, CartService>(); // Mo¿e byæ oddzielna klasa CartAdderService
+builder.Services.AddSingleton<ICartRemover, CartService>(); // Mo¿e byæ oddzielna klasa CartRemoverService
+builder.Services.AddSingleton<ICartReader, CartService>(); // Mo¿e byæ oddzielna klasa CartReaderService
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -37,3 +35,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

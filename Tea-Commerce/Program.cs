@@ -7,7 +7,7 @@ using Tea.Domain.Seeders;
 var builder = WebApplication.CreateBuilder(args);
 //Server=localhost,1444;Database=TeaShopDb;User Id=sa;Password=MyPass123$;Encrypt=False;TrustServerCertificate=True;
 
-var connectionString = "Server=localhost,1444;Database=TeaShopDb;User Id=sa;Password=MyPass123$;Encrypt=False;TrustServerCertificate=True;";
+//var connectionString = "Server=localhost,1444;Database=TeaShopDb;User Id=sa;Password=MyPass123$;Encrypt=False;TrustServerCertificate=True;";
 
 builder.Services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
 //builder.Services.AddDbContext<DataContext>(options =>
