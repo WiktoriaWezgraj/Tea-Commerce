@@ -1,31 +1,40 @@
-﻿using Microsoft.Extensions.Options;
-using System.Security.Authentication;
+﻿using User.Domain.Repositories;
 using User.Domain.Exceptions;
-using User.Domain.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace User.Application;
 
 public class LoginService : ILoginService
 {
+    private readonly IUserRepository _userRepository;
     private readonly IJwtTokenService _jwtTokenService;
 
-    public LoginService(IJwtTokenService jwtTokenService)
+    public LoginService(IUserRepository userRepository, IJwtTokenService jwtTokenService)
     {
+        _userRepository = userRepository;
         _jwtTokenService = jwtTokenService;
     }
 
     public string Login(string username, string password)
     {
-        // Tymczasowa weryfikacja użytkownika (na sztywno)
-        if (username != "admin" || password != "password")
+        var user = _userRepository.GetByUsernameAsync(username).Result;
+
+        if (user == null || user.Password != HashPassword(password))
         {
             throw new InvalidCredentialsException();
         }
 
-        // Przykładowe dane użytkownika
-        var userId = 1;
-        var roles = new List<string> { "Administrator" };
+        var roles = new List<string> { user.Role };
 
-        return _jwtTokenService.GenerateToken(userId, roles);
+        return _jwtTokenService.GenerateToken(user.Id, roles);
+    }
+
+    private string HashPassword(string password)
+    {
+        using var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha256.ComputeHash(bytes);
+        return Convert.ToBase64String(hash);
     }
 }

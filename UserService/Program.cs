@@ -3,15 +3,24 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using User.Application;
 using User.Domain;
+using Microsoft.EntityFrameworkCore;
+using User.Domain.Repositories; // dla IUserRepository
+using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<UserDataContext>(options =>
+    options.UseInMemoryDatabase("Users")); // na pocz¹tek in-memory
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IRegisterService, RegisterService>();
+
 
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
@@ -66,3 +75,15 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<UserDataContext>();
+    db.Users.Add(new User.Domain.Models.UserModel
+    {
+        Username = "admin",
+        Password = Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("password"))),
+        Role = "Administrator"
+    });
+    db.SaveChanges();
+}
