@@ -106,11 +106,26 @@ app.Run();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<UserDataContext>();
-    db.Users.Add(new User.Domain.Models.UserModel
-    {
-        Username = "admin",
-        Password = Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("password"))),
-        Role = "Administrator"
-    });
+
+    db.Users.AddRange(
+        new User.Domain.Models.UserModel
+        {
+            Username = "admin",
+            Password = Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("password"))),
+            Role = "Administrator"
+        },
+        new User.Domain.Models.UserModel
+        {
+            Username = "support",
+            Password = Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("supportpassword"))),
+            Role = "Support"
+        },
+        new User.Domain.Models.UserModel
+        {
+            Username = "client",
+            Password = Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("clientpassword"))),
+            Role = "Customer"
+        });
+
     db.SaveChanges();
 }

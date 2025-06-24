@@ -24,7 +24,9 @@ public class AccountController : ControllerBase
         _accountUpdateService = accountUpdateService;
     }
 
+    // publiczny
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         try
@@ -38,7 +40,9 @@ public class AccountController : ControllerBase
         }
     }
 
+    // publiczny
     [HttpPost("reset-password")]
+    [AllowAnonymous]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
     {
         try
@@ -52,6 +56,7 @@ public class AccountController : ControllerBase
         }
     }
 
+    // tylko zalogowany
     [HttpPut("update")]
     [Authorize]
     public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountRequest request)
@@ -70,5 +75,29 @@ public class AccountController : ControllerBase
         }
     }
 
+    // tylko admin
+    [HttpGet("admin-only")]
+    [Authorize(Roles = "Administrator")]
+    public IActionResult OnlyAdmin()
+    {
+        return Ok("Administrator only");
+    }
+
+    // admin lub support
+    [HttpGet("admin-or-support")]
+    [Authorize(Roles = "Administrator,Support")]
+    public IActionResult AdminOrSupport()
+    {
+        return Ok("Administrator and Support only");
+    }
+
+    // klient
+    [HttpGet("client-area")]
+    [Authorize(Roles = "Customer")]
+    public IActionResult CustomerZone()
+    {
+        return Ok("Customer only");
+    }
 }
+
 
