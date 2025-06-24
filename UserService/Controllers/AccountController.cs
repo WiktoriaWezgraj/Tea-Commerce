@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using User.Application;
 using User.Domain;
 
@@ -10,11 +12,16 @@ public class AccountController : ControllerBase
 {
     private readonly IRegisterService _registerService;
     private readonly IResetPasswordService _resetPasswordService;
+    private readonly IAccountUpdateService _accountUpdateService;
 
-    public AccountController(IRegisterService registerService, IResetPasswordService resetPasswordService)
+    public AccountController(
+        IRegisterService registerService,
+        IResetPasswordService resetPasswordService,
+        IAccountUpdateService accountUpdateService)
     {
         _registerService = registerService;
         _resetPasswordService = resetPasswordService;
+        _accountUpdateService = accountUpdateService;
     }
 
     [HttpPost("register")]
@@ -44,5 +51,24 @@ public class AccountController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpPut("update")]
+    [Authorize]
+    public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountRequest request)
+    {
+        try
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var isAdmin = User.IsInRole("Administrator");
+
+            await _accountUpdateService.UpdateAccountAsync(userId, request, isAdmin);
+            return Ok(new { Message = "Account updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
 }
 

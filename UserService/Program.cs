@@ -23,7 +23,7 @@ builder.Services.AddScoped<IRegisterService, RegisterService>();
 builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-
+builder.Services.AddScoped<IAccountUpdateService, AccountUpdateService>();
 
 // JWT config
 var jwtSettings = builder.Configuration.GetSection("Jwt");
