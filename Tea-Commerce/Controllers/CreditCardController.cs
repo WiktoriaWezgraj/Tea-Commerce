@@ -23,6 +23,8 @@ public class CreditCardController : ControllerBase
         try
         {
             _creditCardService.ValidateCard(cardNumber);
+            _creditCardService.GetCardType(cardNumber);
+            return Ok(new {cardProvider = _creditCardService.GetCardType(cardNumber)});
         }
         catch (CardNumberTooLongException)
         {
@@ -36,12 +38,10 @@ public class CreditCardController : ControllerBase
         {
             return StatusCode(406, "Card number invalid.");
         }
-
-        CreditCardProvider? provider = _creditCardService.GetCardProvider(cardNumber);
-        if (provider == null)
+        catch (NotSupportedException)
         {
             return StatusCode(406, "Card provider not supported.");
         }
-        return Ok(new { Status = "Valid", Provider = provider.Value });
+
     }
 }

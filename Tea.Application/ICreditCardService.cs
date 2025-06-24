@@ -6,6 +6,6 @@ namespace Tea.Application
     {
         void ValidateCard(string cardNumber);
 
-        CreditCardProvider? GetCardProvider(string cardNumber);
+        public string GetCardType(string cardNumber);    
     }
 }
