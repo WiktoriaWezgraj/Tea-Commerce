@@ -15,7 +15,6 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-    // GET: api/<ProductController>
     [HttpGet]
     public async Task<ActionResult> Get()
     {
@@ -23,7 +22,6 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
-    // GET api/<ProductController>/5
     [HttpGet("{id}")]
     public async Task<ActionResult> Get(int id)
     {
@@ -36,7 +34,6 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
-    // POST api/<ProductController>
     [HttpPost]
     public async Task<ActionResult> Post([FromBody] Product product)
     {
@@ -45,7 +42,6 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
-    // PUT api/<ProductController>/5
     [HttpPut("{id}")]
     public async Task<ActionResult> Put(int id, [FromBody] Product product)
     {
@@ -63,11 +59,14 @@ public class ProductController : ControllerBase
     }
 
 
-    // DELETE api/<ProductController>/5
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {
         var product = await _productService.GetAsync(id);
+        if (product == null)
+        {
+            return NotFound($"Product with id {id} was not found.");
+        }
         product.Deleted = true;
         var result = await _productService.UpdateAsync(product);
 
