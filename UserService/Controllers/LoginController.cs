@@ -36,7 +36,7 @@ namespace UserService.Controllers
         [Authorize(Policy = "AdminOnly")]
         public IActionResult AdminPage()
         {
-            return Ok("Dane tylko dla administratora");
+            return Ok("Admin only data");
         }
     }
 
