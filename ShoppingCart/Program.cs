@@ -11,6 +11,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Shopp
 
 // Register dependencies (DIP)
 // Rejestracja zale¿noœci dla ró¿nych us³ug
+builder.Services.AddScoped<IOrderRepository, InMemoryOrderRepository>();
 builder.Services.AddSingleton<ICartRepository, InMemoryCartRepository>();
 builder.Services.AddSingleton<ICartAdder, CartService>(); // Mo¿e byæ oddzielna klasa CartAdderService
 builder.Services.AddSingleton<ICartRemover, CartService>(); // Mo¿e byæ oddzielna klasa CartRemoverService

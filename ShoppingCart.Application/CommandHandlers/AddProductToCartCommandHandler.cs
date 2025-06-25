@@ -16,11 +16,14 @@ public class AddProductToCartCommandHandler : IRequestHandler<AddProductToCartCo
 
     public Task Handle(AddProductToCartCommand command, CancellationToken cancellationToken)
     {
+        var quantity = command.Quantity > 0 ? command.Quantity : 1;
+
         var product = new Product
         {
-            Id = command.ProductId
+            ProductId = command.ProductId,
+            Price = command.Price
         };
-        _cartAdder.AddProductToCart(command.CartId, product);
+        _cartAdder.AddProductToCart(command.CartId, product, quantity);
         return Task.CompletedTask;
     }
 }
