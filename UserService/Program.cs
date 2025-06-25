@@ -2,13 +2,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using User.Application;
-using User.Domain;
 using Microsoft.EntityFrameworkCore;
 using User.Domain.Repositories; // dla IUserRepository
 using System.Security.Cryptography;
 using Microsoft.OpenApi.Models;
+using User.Domain.Requests;
+using QuestPDF.Infrastructure;
+using User.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddDbContext<UserDataContext>(options =>
     options.UseInMemoryDatabase("Users")); // na pocz¹tek in-memory
@@ -52,6 +57,7 @@ builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IAccountUpdateService, AccountUpdateService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 // JWT config
 var jwtSettings = builder.Configuration.GetSection("Jwt");

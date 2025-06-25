@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using User.Domain;
 using User.Domain.Models;
 using User.Domain.Repositories;
+using User.Domain.Requests;
 
 namespace User.Application;
 

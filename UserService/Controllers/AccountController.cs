@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using User.Application;
-using User.Domain;
+using User.Domain.Requests;
 
 namespace UserService.Controllers;
 

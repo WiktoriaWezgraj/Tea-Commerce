@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using User.Application;
-using User.Domain;
 using User.Domain.Exceptions;
+using User.Domain.Requests;
 
 namespace UserService.Controllers
 {
