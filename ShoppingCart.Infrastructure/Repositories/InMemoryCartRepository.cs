@@ -1,4 +1,5 @@
 ﻿using ShoppingCart.Domain.Models;
+using ShoppingCart.Domain.Interfaces;
 
 namespace ShoppingCart.Infrastructure.Repositories;
 
@@ -16,7 +17,7 @@ public class InMemoryCartRepository : ICartRepository
         var existingCart = _carts.FirstOrDefault(c => c.Id == cart.Id);
         if (existingCart != null)
         {
-            existingCart.Products = cart.Products;
+            existingCart.Items = cart.Items;
         }
     }
 

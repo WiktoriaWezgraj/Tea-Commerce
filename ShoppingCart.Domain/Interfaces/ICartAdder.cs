@@ -3,5 +3,5 @@
 namespace ShoppingCart.Domain.Interfaces;
 public interface ICartAdder
 {
-    void AddProductToCart(int cartId, Product product);
+    void AddProductToCart(int cartId, Product product, int quantity);
 }

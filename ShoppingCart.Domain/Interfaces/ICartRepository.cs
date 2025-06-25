@@ -1,6 +1,6 @@
 ﻿using ShoppingCart.Domain.Models;
 
-namespace ShoppingCart.Infrastructure.Repositories;
+namespace ShoppingCart.Domain.Interfaces;
 public interface ICartRepository
 {
     void Add(Cart cart);

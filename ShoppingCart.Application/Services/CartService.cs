@@ -12,10 +12,24 @@ public class CartService : ICartAdder, ICartRemover, ICartReader
         _repository = repository;
     }
 
-    public void AddProductToCart(int cartId, Product product)
+    public void AddProductToCart(int cartId, Product product, int quantity = 1)
     {
         var cart = _repository.FindById(cartId) ?? new Cart { Id = cartId };
-        cart.Products.Add(product);
+        var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == product.ProductId);
+        if (existingItem != null)
+        {
+            existingItem.Quantity += quantity;
+        }
+        else
+        {
+            cart.Items.Add(new CartItem
+            {
+                ProductId = product.ProductId,
+                Quantity = quantity,
+                Price = product.Price 
+            });
+        }
+
         _repository.Add(cart);
     }
 
@@ -24,10 +38,10 @@ public class CartService : ICartAdder, ICartRemover, ICartReader
         var cart = _repository.FindById(cartId);
         if (cart != null)
         {
-            var product = cart.Products.FirstOrDefault(p => p.Id == productId);
-            if (product != null)
+            var cartItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (cartItem != null)
             {
-                cart.Products.Remove(product);
+                cart.Items.Remove(cartItem);
                 _repository.Update(cart);
             }
         }
@@ -41,9 +55,11 @@ public class CartService : ICartAdder, ICartRemover, ICartReader
         return new Cart
         {
             Id = cart.Id,
-            Products = cart.Products.Select(p => new Product
+            Items = cart.Items.Select(i => new CartItem
             {
-                Id = p.Id
+                ProductId = i.ProductId,
+                Quantity = i.Quantity,
+                Price = i.Price
             }).ToList()
         };
     }
@@ -53,9 +69,11 @@ public class CartService : ICartAdder, ICartRemover, ICartReader
         return _repository.GetAll().Select(c => new Cart
         {
             Id = c.Id,
-            Products = c.Products.Select(p => new Product
+            Items = c.Items.Select(i => new CartItem
             {
-                Id = p.Id
+                ProductId = i.ProductId,
+                Quantity = i.Quantity,
+                Price = i.Price
             }).ToList()
         }).ToList();
     }
