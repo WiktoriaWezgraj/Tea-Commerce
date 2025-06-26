@@ -17,7 +17,7 @@ namespace Tea.Domain.Seeders
         public async Task SeedAsync()
         {
             if (await _context.Customers.AnyAsync())
-                return; // Check if there's already data in the Customers table
+                return; // check if there's already data in the Customers table
 
             var customers = new List<Customer>
             {

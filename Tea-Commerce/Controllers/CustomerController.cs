@@ -15,7 +15,6 @@ namespace Tea_Commerce.Controllers
             _customerService = customerService;
         }
 
-        // GET: api/Customer
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
@@ -23,7 +22,6 @@ namespace Tea_Commerce.Controllers
             return Ok(customers);
         }
 
-        // GET: api/Customer/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
@@ -36,7 +34,6 @@ namespace Tea_Commerce.Controllers
             return Ok(customer);
         }
 
-        // POST: api/Customer
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer([FromBody] Customer customer)
         {
@@ -44,7 +41,6 @@ namespace Tea_Commerce.Controllers
             return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.Id }, createdCustomer);
         }
 
-        // PUT: api/Customer/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer(int id, [FromBody] Customer customer)
         {
@@ -57,7 +53,6 @@ namespace Tea_Commerce.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Customer/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {

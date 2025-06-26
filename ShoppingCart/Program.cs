@@ -13,13 +13,11 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"
 builder.Services.AddTransient<IInvoiceService, InvoiceService>();
 QuestPDF.Settings.License = LicenseType.Community;
 
-// Register dependencies (DIP)
-// Rejestracja zale¿noœci dla ró¿nych us³ug
 builder.Services.AddScoped<IOrderRepository, InMemoryOrderRepository>();
 builder.Services.AddSingleton<ICartRepository, InMemoryCartRepository>();
-builder.Services.AddSingleton<ICartAdder, CartService>(); // Mo¿e byæ oddzielna klasa CartAdderService
-builder.Services.AddSingleton<ICartRemover, CartService>(); // Mo¿e byæ oddzielna klasa CartRemoverService
-builder.Services.AddSingleton<ICartReader, CartService>(); // Mo¿e byæ oddzielna klasa CartReaderService
+builder.Services.AddSingleton<ICartAdder, CartService>(); 
+builder.Services.AddSingleton<ICartRemover, CartService>(); 
+builder.Services.AddSingleton<ICartReader, CartService>(); 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

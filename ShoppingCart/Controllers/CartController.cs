@@ -52,12 +52,6 @@ public class CartController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("values")]
-    public IEnumerable<string> Get()
-    {
-        return new string[] { "value1", "value2" };
-    }
-
     [HttpGet("{cartId}")]
     public async Task<IActionResult> GetCart(int cartId)
     {
@@ -99,14 +93,12 @@ public class CartController : ControllerBase
     {
         try
         {
-            // Pobierz repozytorium koszyków
             var cartRepo = HttpContext.RequestServices.GetRequiredService<ICartRepository>();
             var cart = cartRepo.FindById(request.CartId);
 
             if (cart == null || !cart.Items.Any())
                 return NotFound(new { message = "Cart not found or empty." });
 
-            // Utwórz tymczasowe zamówienie z koszyka
             var order = new Order
             {
                 CartId = cart.Id,

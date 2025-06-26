@@ -23,11 +23,9 @@ public class ProcessCartHandler : IRequestHandler<ProcessCartCommand, Order>
         if (cart == null)
             throw new Exception("Cart not found");
 
-        // Walidacja koszyka
         if (!cart.Items.Any())
             throw new Exception("Cart is empty");
 
-        // Tworzenie zamówienia
         var order = new Order
         {
             Items = cart.Items.Select(i => new OrderItem
@@ -42,7 +40,6 @@ public class ProcessCartHandler : IRequestHandler<ProcessCartCommand, Order>
 
         await _orderRepository.AddAsync(order);
 
-        // Zwrot danych o zamówieniu
         return order;
     }
 }

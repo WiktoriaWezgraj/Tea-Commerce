@@ -1,5 +1,4 @@
-﻿
-namespace ShoppingCart.Domain.Models;
+﻿namespace ShoppingCart.Domain.Models;
 public class CartItem
 {
     public int ProductId { get; set; }

@@ -1,6 +1,4 @@
-﻿
-
-namespace ShoppingCart.Domain.Models;
+﻿namespace ShoppingCart.Domain.Models;
 public class OrderItem
 {
     public int ProductId { get; set; }

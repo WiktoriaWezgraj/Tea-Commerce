@@ -17,7 +17,6 @@ public class InMemoryOrderRepository : IOrderRepository
 
     public Task AddAsync(Order order)
     {
-        // Simple Id generation
         order.OrderId = _orders.Count == 0 ? 1 : _orders.Max(o => o.OrderId) + 1;
         _orders.Add(order);
         return Task.CompletedTask;

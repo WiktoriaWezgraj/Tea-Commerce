@@ -1,5 +1,4 @@
-﻿
-using ShoppingCart.Domain.Enums;
+﻿using ShoppingCart.Domain.Enums;
 
 namespace ShoppingCart.Domain.Models;
 public class Order
