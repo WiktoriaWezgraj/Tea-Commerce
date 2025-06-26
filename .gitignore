@@ -47,9 +47,10 @@ TestResults/
 *MigrationsSnapshot.cs
 
 # Sensitive config files
-User/UserService/appsettings.json
-User/UserService/appsettings.Development.json
-
+UserService/appsettings.json
+UserService/appsettings.Development.json
+ShoppingCart/appsettings.json
+ShoppingCart/appsettings.Development.json
 # Others
 Thumbs.db
 Desktop.ini

@@ -4,6 +4,12 @@ using ShoppingCart.Domain.Queries;
 using ShoppingCart.Domain.Commands;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using ShoppingCart.Domain.Interfaces;
+using ShoppingCart.Domain.Queries;
+using ShoppingCart.Application.Services;
+using ShoppingCart.Domain.Enums;
+using ShoppingCart.Domain.Models;
+
 
 namespace ShoppingCart.Controllers;
 
@@ -14,10 +20,12 @@ public class CartController : ControllerBase
 {
 
     private readonly IMediator _mediator;
+    private readonly IInvoiceService _invoiceService;
 
-    public CartController(IMediator mediator)
+    public CartController(IMediator mediator, IInvoiceService invoiceService)
     {
         _mediator = mediator;
+        _invoiceService = invoiceService;
     }
 
     [HttpPost("add-product")]
@@ -85,5 +93,42 @@ public class CartController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+
+    [HttpPost("send-invoice")]
+    public async Task<IActionResult> SendInvoice([FromBody] SendInvoiceRequest request)
+    {
+        try
+        {
+            // Pobierz repozytorium koszyków
+            var cartRepo = HttpContext.RequestServices.GetRequiredService<ICartRepository>();
+            var cart = cartRepo.FindById(request.CartId);
+
+            if (cart == null || !cart.Items.Any())
+                return NotFound(new { message = "Cart not found or empty." });
+
+            // Utwórz tymczasowe zamówienie z koszyka
+            var order = new Order
+            {
+                CartId = cart.Id,
+                CreatedAt = DateTime.UtcNow,
+                Status = OrderStatus.Pending,
+                Items = cart.Items.Select(i => new OrderItem
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity,
+                    Price = i.Price
+                }).ToList()
+            };
+
+            await _invoiceService.GenerateAndSendInvoiceAsync(order, request.Email);
+
+            return Ok(new { message = $"Invoice for cart {request.CartId} sent to {request.Email}" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
 }
+
 

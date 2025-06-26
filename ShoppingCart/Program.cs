@@ -1,6 +1,7 @@
 using ShoppingCart.Domain.Interfaces;
 using ShoppingCart.Infrastructure.Repositories;
 using ShoppingCart.Application.Services;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ShoppingCart.Application.Services.CartService).Assembly));
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddTransient<IInvoiceService, InvoiceService>();
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Register dependencies (DIP)
 // Rejestracja zale¿noœci dla ró¿nych us³ug
